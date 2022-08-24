@@ -28,6 +28,7 @@
 		C1B994E728B3838C005943E8 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C1B994E628B3838C005943E8 /* RealmSwift */; };
 		C1B994EA28B38398005943E8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C1B994E928B38398005943E8 /* Kingfisher */; };
 		C1B9950628B384AD005943E8 /* Transition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B9950528B384AD005943E8 /* Transition+Extension.swift */; };
+		C1CFD24128B5D29200FA082F /* FileManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CFD24028B5D29200FA082F /* FileManager+Extension.swift */; };
 		C1ED474F28B48410003B45FA /* ReusableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED474E28B48410003B45FA /* ReusableProtocol.swift */; };
 		C1ED475228B48456003B45FA /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED475128B48456003B45FA /* BaseCollectionViewCell.swift */; };
 		C1ED475428B48460003B45FA /* BaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED475328B48460003B45FA /* BaseTableViewCell.swift */; };
@@ -63,6 +64,7 @@
 		C1B994AD28B37FD6005943E8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C1B994AF28B37FD6005943E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C1B9950528B384AD005943E8 /* Transition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transition+Extension.swift"; sourceTree = "<group>"; };
+		C1CFD24028B5D29200FA082F /* FileManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extension.swift"; sourceTree = "<group>"; };
 		C1ED474E28B48410003B45FA /* ReusableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableProtocol.swift; sourceTree = "<group>"; };
 		C1ED475128B48456003B45FA /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		C1ED475328B48460003B45FA /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 			children = (
 				C1B9950528B384AD005943E8 /* Transition+Extension.swift */,
 				C1ED477528B4D52F003B45FA /* ImageData.swift */,
+				C1CFD24028B5D29200FA082F /* FileManager+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -343,6 +346,7 @@
 				C1FC3EEF28B4541500117801 /* HomeViewController.swift in Sources */,
 				C11E428228B3952B00275516 /* BaseViewController.swift in Sources */,
 				C1B994A428B37FD5005943E8 /* SceneDelegate.swift in Sources */,
+				C1CFD24128B5D29200FA082F /* FileManager+Extension.swift in Sources */,
 				C1ED475228B48456003B45FA /* BaseCollectionViewCell.swift in Sources */,
 				C11E428D28B39DE500275516 /* ImageSearchViewController.swift in Sources */,
 				C1ED476C28B4C344003B45FA /* ImageAPIManager.swift in Sources */,

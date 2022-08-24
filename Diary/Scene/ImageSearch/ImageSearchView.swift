@@ -10,7 +10,12 @@ import UIKit
 import SnapKit
 import Kingfisher
 
+
 class ImageSearchView: BaseView {
+    
+    var selectImage: UIImage? //1. 공간 만들어줌
+    
+    var selectIndexPath: IndexPath?
     
     let collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: imageCollectionViewLayout())
@@ -73,13 +78,33 @@ extension ImageSearchView: UICollectionViewDelegate, UICollectionViewDataSource 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageSearchCollectionViewCell.reuseIdentifier, for: indexPath) as? ImageSearchCollectionViewCell else {
             return UICollectionViewCell()
         }
-    
-        cell.searchImageView.kf.setImage(with: URL(string: ImageData.images[indexPath.item]))        
+        
+        
+        cell.layer.borderWidth = selectIndexPath == indexPath ? 4 : 0
+        cell.layer.borderColor = selectIndexPath == indexPath ? UIColor.red.cgColor : nil
+        cell.searchImageView.kf.setImage(with: URL(string: ImageData.images[indexPath.item]))
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        ImageData.selectImage = ImageData.images[indexPath.item]
+        
+//        ImageData.selectImage = ImageData.images[indexPath.item]
+        
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ImageSearchCollectionViewCell else { return }
+        selectImage = cell.searchImageView.image
+        
+        selectIndexPath = indexPath
+        collectionView.reloadData()
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        print(#function)
+        selectIndexPath = nil
+        selectImage = nil
+        collectionView.reloadData()
+        
     }
     
 }
@@ -87,7 +112,7 @@ extension ImageSearchView: UICollectionViewDelegate, UICollectionViewDataSource 
 extension ImageSearchView: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+        
         ImageData.images.removeAll()
         guard let text = searchBar.text else { return }
         ImageAPIManager.shared.callRequest(query: text) { value in

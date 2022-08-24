@@ -38,7 +38,7 @@ class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -75,7 +75,7 @@ class HomeViewController: BaseViewController {
     @objc func plusButtonClicked() {
         let vc = WriteViewController()
         
-        self.navigationController?.pushViewController(vc, animated: true)
+        transition(vc, transitionStyle: .presentFullScreen)
     }
     
     @objc func sortButtonClicked() {
@@ -102,7 +102,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? HomeTableViewCell else { return UITableViewCell() }
+        
+        cell.diaryImageView.image = loadImageFromDocument(fileName: "\(tasks[indexPath.row].objectId).jpg")
+        
         cell.setData(data: tasks[indexPath.row])
+        
         return cell
     }
     
@@ -133,7 +137,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             //1. 스와이프한 셀 하나만 ReloadRows 코드를 구현 => 상대적 효율성
             tableView.reloadRows(at: [indexPath], with: .none)
             //2. 데이터가 변경되었으니 다시 Realm에서 데이터를 가져오기 => didSet 일관적 형태로 갱신
-//            self.fetchRealm()
+            //            self.fetchRealm()
             
         }
         
@@ -149,6 +153,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         let taskDelete = tasks[indexPath.row]
         
         if editingStyle == .delete {
+            //도큐먼트 이미지 파일 삭제
+            removeImageFromDocument(fileName: "\(tasks[indexPath.row].objectId).jpg")
             try! self.localRealm.write {
                 self.localRealm.delete(taskDelete)
             }

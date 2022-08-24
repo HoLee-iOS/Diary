@@ -14,6 +14,7 @@ class ImageSearchCollectionViewCell: BaseCollectionViewCell {
     let searchImageView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
+        view.layer.masksToBounds = true
         view.clipsToBounds = true
         return view
     }()

@@ -59,7 +59,6 @@ class HomeTableViewCell: BaseTableViewCell {
         titleLabel.text = data.diaryTitle
         dateLabel.text = data.diaryDate.formatted()
         contentLabel.text = data.diaryContent
-        diaryImageView.kf.setImage(with: URL(string: data.photo ?? ""))
     }
     
     override func configure() {

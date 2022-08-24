@@ -11,12 +11,17 @@ import RealmSwift
 import Kingfisher
 import SnapKit
 
+//1.프로토콜 선언
+protocol SelectImageDelegate {
+    func sendImageData(image: UIImage)
+}
+
 class WriteViewController: BaseViewController {
     
     var mainView = WriteView()
-    let localRealm = try! Realm()
+    let localRealm = try! Realm() //도큐먼트 접근 코드 내장
     
-    var imageURL = ""
+    var image: UIImage?
     
     var setImage: ((String)->())?
     
@@ -29,12 +34,10 @@ class WriteViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("Realm is located at", localRealm.configuration.fileURL!)
     }
     
     override func configure() {
-        
-        mainView.titleTextField.addTarget(self, action: #selector(titleTextFieldClicked(_:)), for: .editingDidEndOnExit)
         
         mainView.addPhotoButton.addTarget(self, action: #selector(addPhotoButtonClicked), for: .touchUpInside)
         
@@ -45,36 +48,57 @@ class WriteViewController: BaseViewController {
         navigationItem.rightBarButtonItem = saveButton
     }
     
+    // Realm + 이미지 도큐먼트 저장
     @objc func saveButtonClicked() {
-        let task = UserDiary(diaryTitle: mainView.titleTextField.text!, diaryContent: mainView.contentTextView.text, diaryDate: Date(), regdate: Date(), photo: self.imageURL)
         
-        try! localRealm.write {
-            localRealm.add(task)
+        //타이틀 유무 체크
+        guard let title = mainView.titleTextField.text else {
+            showToastMessage(message: "제목을 입력해주세요")
+            return
         }
         
-        print(print("Realm is located at:", localRealm.configuration.fileURL!))
+        let task = UserDiary(diaryTitle: title, diaryContent: mainView.contentTextView.text, diaryDate: Date(), regdate: Date(), photo: nil)
         
-        self.navigationController?.popViewController(animated: true)
+        do {
+            try localRealm.write {
+                localRealm.add(task)
+            }
+        } catch let error {
+            print(error)
+        }
+        
+        //이미지 유무 체크후 도큐먼트에 이미지 저장
+        if let image = mainView.photoImageView.image {
+            saveImageToDocument(fileName: "\(task.objectId).jpg", image: image)
+        }
+        
+        dismiss(animated: true)
     }
     
     @objc func cancelButtonClicked() {
-        self.navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func titleTextFieldClicked(_ textField: UITextField) {
-        guard let text = textField.text, text.count > 0 else {
-            showToastMessage(message: "값을 입력해주세요.")
-            return
-        }
+        dismiss(animated: true)
     }
     
     @objc func addPhotoButtonClicked() {
         let vc = ImageSearchViewController()
-        vc.setImage = { image in
-            self.imageURL = image
-            self.mainView.photoImageView.kf.setImage(with: URL(string: image))
-        }
-        self.navigationController?.pushViewController(vc, animated: true)
+        //        vc.setImage = { image in
+        //            self.imageURL = image
+        //            self.mainView.photoImageView.kf.setImage(with: URL(string: image))
+        //        }
+        //4. 빈공간에 할당
+        vc.delegate = self
+        image = vc.mainView.selectImage
+        transition(vc, transitionStyle: .presentFullScreen)
+    }
+    
+}
+
+//2. 프로토콜 채택
+extension WriteViewController: SelectImageDelegate {
+    
+    func sendImageData(image: UIImage) {
+        mainView.photoImageView.image = image
+        print(#function)
     }
     
 }
