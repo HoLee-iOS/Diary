@@ -9,22 +9,38 @@ import UIKit
 
 import SnapKit
 import RealmSwift //Realm 1. import
+import Zip
+import FSCalendar
 
 class HomeViewController: BaseViewController {
     
-    var imageURL = ""
+    //    let localRealm = try! Realm() // Realm 2.
+    //repository 생성으로 다른 코드로 대체
+    let repository = DiaryRepository()
     
-    let localRealm = try! Realm() // Realm 2.
+    lazy var calendar: FSCalendar = {
+        let view = FSCalendar()
+        view.delegate = self
+        view.dataSource = self
+        view.backgroundColor = .white
+        return view
+    }()
     
     //나중에 초기화를 해도 괜찮음
     //필요한 시점에 지연으로 프로퍼티를 만드는 것
-    lazy var tableView: UITableView = {
+    let tableView: UITableView = {
         let view = UITableView()
         view.rowHeight = 100
         //self는 초기화가 된 후에 사용이 가능함
         
         return view
     }() //let으로 선언한다면 즉시 실행 클로저
+    
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyMMdd"
+        return formatter
+    }()
     
     var tasks: Results<UserDiary>! {
         didSet {
@@ -39,9 +55,14 @@ class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //아래의 코드를 이용하면 2초 후에 code를 실행가능
+        //        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        //            code
+        //        }
+        
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.reuseIdentifier)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,27 +70,136 @@ class HomeViewController: BaseViewController {
         print(#function)
         
         fetchRealm()
+        tableView.reloadData()
     }
     
     func fetchRealm() {
         //Realm 3. Realm 데이터를 정렬해 tasks 에 담기
-        tasks = localRealm.objects(UserDiary.self).sorted(byKeyPath: "diaryTitle", ascending: true)
+        tasks = repository.fetch()
     }
     
     override func configure() {
         view.addSubview(tableView)
+        view.addSubview(calendar)
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(plusButtonClicked))
         
         let sortButton = UIBarButtonItem(title: "정렬", style: .plain, target: self, action: #selector(sortButtonClicked))
         let filterButton = UIBarButtonItem(title: "필터", style: .plain, target: self, action: #selector(filterButtonClicked))
         
-        navigationItem.leftBarButtonItems = [sortButton, filterButton]
+        //백업 버튼
+        let backUpButton = UIBarButtonItem(title: "백업", image: nil, primaryAction: UIAction(handler: { _ in
+            
+            var urlPaths = [URL]()
+            
+            //1. 도큐먼트 위치에 백업 파일 확인
+            
+            //도큐먼트 위치 가져오기
+            guard let path = self.documentDirectoryPath() else {
+                self.showToastMessage(message: "도큐먼트 위치에 오류가 있습니다")
+                return
+            }
+            //도큐먼트 내부의 백업할 Realm 파일에 대한 세부 경로를 추가해줌
+            let realmFile = path.appendingPathComponent("default.realm")
+            
+            //파일이 없으면 토스트 띄우고 아니면 배열에 URL 추가해줌
+            guard FileManager.default.fileExists(atPath: realmFile.path) else {
+                self.showToastMessage(message: "백업할 파일이 없습니다")
+                return
+            }
+            
+            urlPaths.append(URL(string: realmFile.path)!)
+            
+            //백업 파일을 압축: URL
+            do {
+                let zipFilePath = try Zip.quickZipFiles(urlPaths , fileName: "Diary_1")
+                print("Archive Location: \(zipFilePath)")
+                //성공 했을 경우에만 ActivityViewController를 불러오기 위해 do구문 안에 배치함
+                self.showActivityViewController()
+            } catch {
+                self.showToastMessage(message: "압축을 실패했습니다")
+            }
+            
+            //            let vc = BackUpViewController()
+            //            self.transition(vc, transitionStyle: .present)
+            
+        }), menu: nil)
+        
+        
+        //복구 버튼
+        let restoreButton = UIBarButtonItem(title: "복구", image: nil, primaryAction: UIAction(handler: { _ in
+            
+            let vc = BackUpViewController()
+
+            do {
+
+                guard let path = self.documentDirectoryPath() else {
+                    self.showToastMessage(message: "파일 위치에 오류가 있습니다")
+                    return
+                }
+
+                //includingPropertiesForKeys: 더 추가적인 정보를 가져오는 것 [.으로 가져올 수 있음]
+                let docs = try FileManager.default.contentsOfDirectory(at: path, includingPropertiesForKeys: nil)
+                print("docs: \(docs)")
+
+                //확장자가 zip인 애를 가져오기
+                let zip = docs.filter { $0.pathExtension == "zip" }
+                print("zip: \(zip)")
+
+                let result = zip.map { $0.lastPathComponent }
+                print("result: \(result)")
+
+                vc.zipFiles = result
+
+                vc.urls = zip
+
+            } catch {
+                print("Error")
+            }
+
+
+            self.present(vc, animated: true)
+            
+            //            //asCopy를 이용해서 백업 파일을 복사해서 가져올 것인지를 정함
+//                        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.archive], asCopy: true)
+//                        documentPicker.delegate = self
+//                        documentPicker.allowsMultipleSelection = false
+//            documentPicker.modalPresentationStyle = .formSheet
+//                        self.present(documentPicker, animated: true)
+            
+        }), menu: nil)
+        
+        
+        navigationItem.leftBarButtonItems = [sortButton, filterButton, backUpButton, restoreButton]
+    }
+    
+    func showActivityViewController() {
+        
+        //도큐먼트 위치 가져오기
+        guard let path = self.documentDirectoryPath() else {
+            self.showToastMessage(message: "도큐먼트 위치에 오류가 있습니다")
+            return
+        }
+        //도큐먼트 내부의 백업할 Realm 파일에 대한 세부 경로를 추가해줌
+        let backUpFileURL = path.appendingPathComponent("Diary_1.zip")
+        
+        
+        let vc = UIActivityViewController(activityItems: [backUpFileURL], applicationActivities: [])
+        self.present(vc, animated: true)
     }
     
     override func setConstraints() {
+        
         tableView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.topMargin.equalTo(300)
         }
+        
+        calendar.snp.makeConstraints { make in
+            make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(300)
+        }
+        
     }
     
     @objc func plusButtonClicked() {
@@ -79,7 +209,7 @@ class HomeViewController: BaseViewController {
     }
     
     @objc func sortButtonClicked() {
-        tasks = localRealm.objects(UserDiary.self).sorted(byKeyPath: "regdate", ascending: true)
+        tasks = repository.fetchSort("regdate")
     }
     
     //realm filter query, NSPredicate
@@ -87,7 +217,7 @@ class HomeViewController: BaseViewController {
         
         //CONTAINS[c]를 사용하면 대소문자 구분없이 필터링 해줌
         //CONTAINS 'String값'으로 필터나 검색 기능 구현시 많이 사용함
-        tasks = localRealm.objects(UserDiary.self).filter("diaryTitle CONTAINS[c] '이현호'")
+        tasks = repository.fetchFilter()
         //realm 에서 String 값을 가져올 때 ''로 가져와야함
         //            .filter("diaryTitle = '오늘의 일기 14'")
     }
@@ -101,7 +231,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? HomeTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.reuseIdentifier) as? HomeTableViewCell else { return UITableViewCell() }
         
         cell.diaryImageView.image = loadImageFromDocument(fileName: "\(tasks[indexPath.row].objectId).jpg")
         
@@ -117,30 +247,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         let favorite = UIContextualAction(style: .normal, title: nil) { action, view, completionHandler in
             
-            try! self.localRealm.write {
-                
-                //값을 변경하는 방법은 다양하기 때문에 모든 방법을 외우기보다는 때에 맞게 API를 활용해서 보고 사용하면 됨
-                
-                //하나의 레코드에서 특정 컬럼 하나만 변경
-                self.tasks[indexPath.row].favorite = !self.tasks[indexPath.row].favorite
-                
-                //하나의 테이블에 특정 컬럼 전체 값을 변경
-                //self.tasks.setValue(true, forKey: "favorite")
-                
-                //하나의 레코드에서 여러 컬럼들을 변경
-                //self.localRealm.create(UserDiary.self, value: ["objectId": self.tasks[indexPath.row].objectId, "diaryContent": "변경 테스트", "diaryTitle": "제목임"], update: .modified)
-                
-                print("Realm Update")
-            }
-            
-            //열린 상태에서 변경하는 형태는 UX적으로 좋지 않음
-            //1. 스와이프한 셀 하나만 ReloadRows 코드를 구현 => 상대적 효율성
-            tableView.reloadRows(at: [indexPath], with: .none)
-            //2. 데이터가 변경되었으니 다시 Realm에서 데이터를 가져오기 => didSet 일관적 형태로 갱신
-            //            self.fetchRealm()
+            //realm data update
+            self.repository.updateFavorite(item: self.tasks[indexPath.row])
+            self.fetchRealm()
             
         }
-        
         //realm 데이터 기준
         let image = tasks[indexPath.row].favorite ? "star.fill" : "star"
         favorite.image = UIImage(systemName: image)
@@ -149,17 +260,124 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return UISwipeActionsConfiguration(actions: [favorite])
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        let taskDelete = tasks[indexPath.row]
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        if editingStyle == .delete {
-            //도큐먼트 이미지 파일 삭제
-            removeImageFromDocument(fileName: "\(tasks[indexPath.row].objectId).jpg")
-            try! self.localRealm.write {
-                self.localRealm.delete(taskDelete)
-            }
-            tableView.reloadData()
+        let delete = UIContextualAction(style: .normal, title: "삭제") { action, view, completionHandler in
+            self.repository.deleteItem(item: self.tasks[indexPath.row])
+            self.fetchRealm()
         }
+        
+        delete.backgroundColor = .red
+        
+        return UISwipeActionsConfiguration(actions: [delete])
     }
     
 }
+
+extension HomeViewController: FSCalendarDelegate, FSCalendarDataSource {
+    
+    //하루 당 이벤트의 점 갯수 몇개 보이게할지
+    func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
+        return repository.fetchDate(date: date).count
+    }
+    
+    
+    //    func calendar(_ calendar: FSCalendar, titleFor date: Date) -> String? {
+    //        return "새싹"
+    //    }
+    
+    
+    //    func calendar(_ calendar: FSCalendar, imageFor date: Date) -> UIImage? {
+    //        return UIImage(systemName: "heart.fill")
+    //    }
+    
+    
+    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
+        return formatter.string(from: date) == "220907" ? "오프라인 행사" : nil
+    }
+    
+    
+    //    func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
+    //        <#code#>
+    //    }
+    
+    //100 -> 25일 3 -> 3 =>
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        tasks = repository.fetchDate(date: date)
+    }
+}
+
+extension HomeViewController: UIDocumentPickerDelegate  {
+    
+    
+    
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        print(#function)
+    }
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        
+        //documentPicker에서 선택한 파일의 URL 가져오기
+        guard let selectedFileURL = urls.first else {
+            showToastMessage(message: "선택하신 파일을 찾을 수 없습니다")
+            return
+        }
+        
+        print("selectFileURL:\(selectedFileURL)")
+        print(urls)
+        
+        //도큐먼트 위치 가져오기
+        guard let path = self.documentDirectoryPath() else {
+            self.showToastMessage(message: "도큐먼트 위치에 오류가 있습니다")
+            return
+        }
+        
+        //도큐먼트 위치 내부에서 documentPicker에서 선택한 파일의 URL을 가져오기
+        let sandboxFileURL = path.appendingPathComponent(selectedFileURL.lastPathComponent)
+        
+        //documentPicker에서 선택한 해당 파일이 존재하면 파일 압축 풀기
+        if FileManager.default.fileExists(atPath: sandboxFileURL.path) {
+            
+            print(sandboxFileURL)
+            let fileURL = path.appendingPathComponent("Diary_1.zip")
+            
+            do {
+                try Zip.unzipFile(fileURL, destination: path, overwrite: true, password: nil, progress: { progress in
+                    print("progress: \(progress)")
+                }, fileOutputHandler: { unzippedFile in
+                    print("unzippedFile: \(unzippedFile)")
+                    self.showToastMessage(message: "복구가 완료되었습니다")
+                })
+                
+            } catch {
+                showToastMessage(message: "압축 해제 실패했습니다")
+            }
+            
+        } else {
+            
+            //파일이 존재하지 않을 때
+            do {
+                //파일 앱의 zip -> 도큐먼트 폴더에 복사
+                try FileManager.default.copyItem(at: selectedFileURL, to: sandboxFileURL)
+                
+                let fileURL = path.appendingPathComponent("Diary_1.zip") //폴더 생성, 폴더 안에 파일 저장
+                
+                try Zip.unzipFile(fileURL, destination: path, overwrite: true, password: nil, progress: { progress in
+                    print("progress: \(progress)")
+                }, fileOutputHandler: { unzippedFile in
+                    print("unzippedFile: \(unzippedFile)")
+                    self.showToastMessage(message: "복구가 완료되었습니다")
+                })
+                
+            } catch {
+                showToastMessage(message: "압축 해제에 실패했습니다.")
+            }
+            
+        }
+        
+        
+    }
+    
+}
+
+

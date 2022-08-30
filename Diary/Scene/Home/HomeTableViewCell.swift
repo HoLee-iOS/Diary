@@ -17,21 +17,21 @@ class HomeTableViewCell: BaseTableViewCell {
     }()
     
     let titleLabel: UILabel = {
-       let view = UILabel()
+        let view = UILabel()
         view.textColor = Constants.BaseColor.text
         view.font = .boldSystemFont(ofSize: 15)
         return view
     }()
     
     let dateLabel: UILabel = {
-       let view = UILabel()
+        let view = UILabel()
         view.textColor = Constants.BaseColor.text
         view.font = .boldSystemFont(ofSize: 13)
         return view
     }()
     
     let contentLabel: UILabel = {
-       let view = UILabel()
+        let view = UILabel()
         view.textColor = Constants.BaseColor.text
         view.font = .systemFont(ofSize: 13)
         return view
@@ -67,9 +67,9 @@ class HomeTableViewCell: BaseTableViewCell {
             contentView.addSubview($0)
         }
         
-//        [titleLabel, dateLabel, contentLabel].forEach {
-//            stackView.addArrangedSubview($0)
-//        }
+        //        [titleLabel, dateLabel, contentLabel].forEach {
+        //            stackView.addArrangedSubview($0)
+        //        }
     }
     
     override func setConstraints() {
@@ -89,7 +89,7 @@ class HomeTableViewCell: BaseTableViewCell {
         }
     }
     
-
+    
     
     
 }

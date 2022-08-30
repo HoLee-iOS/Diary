@@ -27,4 +27,5 @@ class BaseViewController: UIViewController {
     func showToastMessage(message: String) {
         self.view.makeToast(message, position: .center)
     }
+    
 }

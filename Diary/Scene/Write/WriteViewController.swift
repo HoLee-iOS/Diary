@@ -16,10 +16,11 @@ protocol SelectImageDelegate {
     func sendImageData(image: UIImage)
 }
 
-class WriteViewController: BaseViewController {
+final class WriteViewController: BaseViewController {
     
     var mainView = WriteView()
-    let localRealm = try! Realm() //도큐먼트 접근 코드 내장
+//    private let localRealm = try! Realm() //도큐먼트 접근 코드 내장
+    let repository = DiaryRepository()
     
     var image: UIImage?
     
@@ -34,7 +35,7 @@ class WriteViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Realm is located at", localRealm.configuration.fileURL!)
+        print("Realm is located at", repository.localRealm.configuration.fileURL!)
     }
     
     override func configure() {
@@ -60,8 +61,8 @@ class WriteViewController: BaseViewController {
         let task = UserDiary(diaryTitle: title, diaryContent: mainView.contentTextView.text, diaryDate: Date(), regdate: Date(), photo: nil)
         
         do {
-            try localRealm.write {
-                localRealm.add(task)
+            try repository.localRealm.write {
+                repository.localRealm.add(task)
             }
         } catch let error {
             print(error)
@@ -75,7 +76,7 @@ class WriteViewController: BaseViewController {
         dismiss(animated: true)
     }
     
-    @objc func cancelButtonClicked() {
+    @objc private func cancelButtonClicked() {
         dismiss(animated: true)
     }
     

@@ -10,6 +10,18 @@ import UIKit
 
 extension UIViewController {
     
+    //파일앱의 백업파일 경로
+    func fileDirectoryPath() -> String? {
+        return  "file:///Users/ihyeonho/Library/Developer/CoreSimulator/Devices/080C60FA-4C76-48DD-8F1F-1433174FE3BF/data/Containers/Data/Application/7855B45A-5251-43D9-93CE-D26444DE9DF8/tmp/com.skylerLee.Diary-Inbox"
+        
+   
+    }
+    
+    func documentDirectoryPath() -> URL? {
+        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil } //Document 경로
+        return documentDirectory
+    }
+    
     //도큐먼트의 이미지 로드
     func loadImageFromDocument(fileName: String) -> UIImage? {
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil } //Document 경로
@@ -22,17 +34,7 @@ extension UIViewController {
         }
     }
     
-    //도큐먼트의 이미지 제거
-    func removeImageFromDocument(fileName: String) {
-        guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return } //Document 경로
-        let fileURL = documentDirectory.appendingPathComponent(fileName) //세부 경로. 이미지를 저장할 위치
     
-        do {
-            try FileManager.default.removeItem(at: fileURL)
-        } catch let error {
-            print(error)
-        }
-    }
     
     func saveImageToDocument(fileName: String, image: UIImage) {
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return } //Document 경로
@@ -47,4 +49,28 @@ extension UIViewController {
         
     }
     
+    func fetchDocumentZipFile() -> [String] {
+        
+        do {
+            let path = documentDirectoryPath()!
+            
+            //includingPropertiesForKeys: 더 추가적인 정보를 가져오는 것 [.으로 가져올 수 있음]
+            let docs = try FileManager.default.contentsOfDirectory(at: path, includingPropertiesForKeys: nil)
+            print("docs: \(docs)")
+            
+            //확장자가 zip인 애를 가져오기
+            let zip = docs.filter { $0.pathExtension == ".zip" }
+            print("zip: \(zip)")
+            
+            let result = zip.map { $0.lastPathComponent }
+            print("result: \(result)")
+            
+            return result
+            
+        } catch {
+            print("Error")
+            
+            return [""]
+        }
+    }
 }

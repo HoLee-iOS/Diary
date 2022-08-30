@@ -29,6 +29,10 @@
 		C1B994EA28B38398005943E8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C1B994E928B38398005943E8 /* Kingfisher */; };
 		C1B9950628B384AD005943E8 /* Transition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B9950528B384AD005943E8 /* Transition+Extension.swift */; };
 		C1CFD24128B5D29200FA082F /* FileManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CFD24028B5D29200FA082F /* FileManager+Extension.swift */; };
+		C1D29AB028B6314300FEBEDF /* BackUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D29AAF28B6314300FEBEDF /* BackUpViewController.swift */; };
+		C1D29AB228B6321A00FEBEDF /* BackUpTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D29AB128B6321A00FEBEDF /* BackUpTableViewCell.swift */; };
+		C1DC395428B855960031AF12 /* DiaryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DC395328B855960031AF12 /* DiaryRepository.swift */; };
+		C1DC395728B861A80031AF12 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = C1DC395628B861A80031AF12 /* FSCalendar */; };
 		C1ED474F28B48410003B45FA /* ReusableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED474E28B48410003B45FA /* ReusableProtocol.swift */; };
 		C1ED475228B48456003B45FA /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED475128B48456003B45FA /* BaseCollectionViewCell.swift */; };
 		C1ED475428B48460003B45FA /* BaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED475328B48460003B45FA /* BaseTableViewCell.swift */; };
@@ -42,6 +46,7 @@
 		C1ED477228B4C4D8003B45FA /* ACCESSKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED477128B4C4D8003B45FA /* ACCESSKey.swift */; };
 		C1ED477428B4C577003B45FA /* EndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED477328B4C577003B45FA /* EndPoint.swift */; };
 		C1ED477628B4D52F003B45FA /* ImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED477528B4D52F003B45FA /* ImageData.swift */; };
+		C1FB078228B7015400261856 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = C1FB078128B7015400261856 /* Zip */; };
 		C1FC3EEF28B4541500117801 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FC3EEE28B4541500117801 /* HomeViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +70,9 @@
 		C1B994AF28B37FD6005943E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C1B9950528B384AD005943E8 /* Transition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transition+Extension.swift"; sourceTree = "<group>"; };
 		C1CFD24028B5D29200FA082F /* FileManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extension.swift"; sourceTree = "<group>"; };
+		C1D29AAF28B6314300FEBEDF /* BackUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackUpViewController.swift; sourceTree = "<group>"; };
+		C1D29AB128B6321A00FEBEDF /* BackUpTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackUpTableViewCell.swift; sourceTree = "<group>"; };
+		C1DC395328B855960031AF12 /* DiaryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryRepository.swift; sourceTree = "<group>"; };
 		C1ED474E28B48410003B45FA /* ReusableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableProtocol.swift; sourceTree = "<group>"; };
 		C1ED475128B48456003B45FA /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
 		C1ED475328B48460003B45FA /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
@@ -88,8 +96,10 @@
 				C1ED476828B4C115003B45FA /* SwiftyJSON in Frameworks */,
 				C1B994E728B3838C005943E8 /* RealmSwift in Frameworks */,
 				C1B994E528B3838C005943E8 /* Realm in Frameworks */,
+				C1DC395728B861A80031AF12 /* FSCalendar in Frameworks */,
 				C1ED476528B4C104003B45FA /* Alamofire in Frameworks */,
 				C11E428A28B395EF00275516 /* Toast in Frameworks */,
+				C1FB078228B7015400261856 /* Zip in Frameworks */,
 				C1B994E228B38359005943E8 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				C11E427828B3919000275516 /* DiaryRealm.swift */,
+				C1DC395328B855960031AF12 /* DiaryRepository.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -108,6 +119,7 @@
 		C11E427A28B394B700275516 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				C1D29AAE28B6312600FEBEDF /* BackUp */,
 				C1FC3EED28B453FF00117801 /* Home */,
 				C11E428B28B39CC700275516 /* ImageSearch */,
 				C11E427B28B394C200275516 /* Write */,
@@ -201,6 +213,15 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		C1D29AAE28B6312600FEBEDF /* BackUp */ = {
+			isa = PBXGroup;
+			children = (
+				C1D29AAF28B6314300FEBEDF /* BackUpViewController.swift */,
+				C1D29AB128B6321A00FEBEDF /* BackUpTableViewCell.swift */,
+			);
+			path = BackUp;
+			sourceTree = "<group>";
+		};
 		C1ED475028B4841E003B45FA /* BaseView */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +291,8 @@
 				C11E428928B395EF00275516 /* Toast */,
 				C1ED476428B4C104003B45FA /* Alamofire */,
 				C1ED476728B4C115003B45FA /* SwiftyJSON */,
+				C1FB078128B7015400261856 /* Zip */,
+				C1DC395628B861A80031AF12 /* FSCalendar */,
 			);
 			productName = Diary;
 			productReference = C1B9949E28B37FD5005943E8 /* Diary.app */;
@@ -306,6 +329,8 @@
 				C11E428828B395EF00275516 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				C1ED476328B4C104003B45FA /* XCRemoteSwiftPackageReference "Alamofire" */,
 				C1ED476628B4C115003B45FA /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
+				C1FB078028B7015400261856 /* XCRemoteSwiftPackageReference "Zip" */,
+				C1DC395528B861A80031AF12 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			productRefGroup = C1B9949F28B37FD5005943E8 /* Products */;
 			projectDirPath = "";
@@ -341,12 +366,14 @@
 				C1ED477228B4C4D8003B45FA /* ACCESSKey.swift in Sources */,
 				C11E427D28B394CC00275516 /* WriteView.swift in Sources */,
 				C1B994A228B37FD5005943E8 /* AppDelegate.swift in Sources */,
+				C1D29AB028B6314300FEBEDF /* BackUpViewController.swift in Sources */,
 				C11E428028B3951100275516 /* BaseView.swift in Sources */,
 				C1ED475628B484C2003B45FA /* HomeTableViewCell.swift in Sources */,
 				C1FC3EEF28B4541500117801 /* HomeViewController.swift in Sources */,
 				C11E428228B3952B00275516 /* BaseViewController.swift in Sources */,
 				C1B994A428B37FD5005943E8 /* SceneDelegate.swift in Sources */,
 				C1CFD24128B5D29200FA082F /* FileManager+Extension.swift in Sources */,
+				C1DC395428B855960031AF12 /* DiaryRepository.swift in Sources */,
 				C1ED475228B48456003B45FA /* BaseCollectionViewCell.swift in Sources */,
 				C11E428D28B39DE500275516 /* ImageSearchViewController.swift in Sources */,
 				C1ED476C28B4C344003B45FA /* ImageAPIManager.swift in Sources */,
@@ -359,6 +386,7 @@
 				C11E428728B395B400275516 /* WriteViewController.swift in Sources */,
 				C11E428528B3957C00275516 /* CustomTextField.swift in Sources */,
 				C1ED477628B4D52F003B45FA /* ImageData.swift in Sources */,
+				C1D29AB228B6321A00FEBEDF /* BackUpTableViewCell.swift in Sources */,
 				C1ED475D28B49171003B45FA /* DiaryImageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +639,14 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		C1DC395528B861A80031AF12 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		C1ED476328B4C104003B45FA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -625,6 +661,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.0;
+			};
+		};
+		C1FB078028B7015400261856 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -655,6 +699,11 @@
 			package = C1B994E828B38398005943E8 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
+		C1DC395628B861A80031AF12 /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1DC395528B861A80031AF12 /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
+		};
 		C1ED476428B4C104003B45FA /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C1ED476328B4C104003B45FA /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -664,6 +713,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C1ED476628B4C115003B45FA /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		C1FB078128B7015400261856 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1FB078028B7015400261856 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -8,7 +8,7 @@
 import UIKit
 
 //루트뷰를 코드로 따로 짠 후에 뷰컨에서 아래에서 짠 뷰를 로드해오는 형태
-class WriteView: BaseView {
+final class WriteView: BaseView {
     
     let photoImageView: UIImageView = {
         let view = UIImageView()
